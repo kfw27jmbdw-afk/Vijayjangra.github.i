@@ -3,203 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iPhone Compatible Music Player</title>
+<title>Spotify-like Music Player</title>
 <style>
   body {
-    font-family: "Poppins", sans-serif;
-    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #121212;
     color: white;
+  }
+
+  .player {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100vh;
+    width: 100%;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background-color: #1c1c1c;
+    align-items: center;
+  }
+
+  .top-bar h1 {
     margin: 0;
+    font-size: 20px;
   }
-  h1 { margin-bottom: 10px; }
-  .player {
-    background: rgba(255,255,255,0.1);
+
+  .playlist {
+    flex: 1;
+    overflow-y: auto;
     padding: 20px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
-  .upload-label {
-    display: inline-block;
-    background: #03a9f4;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
+
+  .song {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #1e1e1e;
+    border-radius: 6px;
     cursor: pointer;
-    margin-bottom: 20px;
-    transition: 0.3s;
+    transition: background 0.2s;
   }
-  .upload-label:hover { background: #0288d1; }
-  input[type="file"] { display: none; }
-  .song-name { margin-top: 10px; font-weight: 600; }
+
+  .song:hover {
+    background-color: #333;
+  }
+
   .controls {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-top: 15px;
+    align-items: center;
+    padding: 20px;
+    background-color: #1c1c1c;
   }
-  button {
-    background: #03a9f4;
+
+  .controls button {
+    background: none;
     border: none;
-    padding: 10px;
-    border-radius: 50%;
-    font-size: 18px;
-    cursor: pointer;
     color: white;
-    transition: 0.3s;
+    margin: 0 20px;
+    font-size: 24px;
+    cursor: pointer;
   }
-  button:hover { background: #0288d1; }
-  .progress {
+
+  .controls button:hover {
+    color: #1db954;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  label {
+    background-color: #1db954;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  audio {
     width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 5px;
-    margin-top: 15px;
-    cursor: pointer;
+    outline: none;
   }
-  .progress-bar {
-    height: 6px;
-    width: 0%;
-    background: #03a9f4;
-    border-radius: 5px;
-  }
-  ul {
-    list-style: none;
-    padding: 0;
-    max-height: 100px;
-    overflow-y: auto;
-    margin-top: 10px;
-  }
-  li {
-    padding: 6px;
-    background: rgba(255,255,255,0.1);
-    margin-bottom: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  li.active { background: #03a9f4; }
 </style>
 </head>
 <body>
-
-<h1>🎧 iPhone Music Player</h1>
-
 <div class="player">
-  <label class="upload-label" for="fileInput">Select Music Files</label>
-  <input type="file" id="fileInput" accept="audio/*" multiple>
-
-  <div class="song-name" id="songName">No song playing</div>
-
-  <div class="progress" id="progress">
-    <div class="progress-bar" id="progressBar"></div>
+  <div class="top-bar">
+    <h1>Spotify Player</h1>
+    <div>
+      <label for="fileInput">Upload Local Music</label>
+      <input type="file" id="fileInput" multiple accept="audio/*">
+      <label for="driveInput">Google Drive URL</label>
+      <input type="text" id="driveInput" placeholder="Paste Google Drive File URL">
+      <button id="addDrive">Add</button>
+    </div>
   </div>
+
+  <div class="playlist" id="playlist"></div>
 
   <div class="controls">
-    <button id="prev">⏮️</button>
-    <button id="playPause">▶️</button>
-    <button id="next">⏭️</button>
+    <button id="prev">&#9664;&#9664;</button>
+    <button id="play">&#9654;</button>
+    <button id="next">&#9654;&#9654;</button>
   </div>
 
-  <ul id="playlist"></ul>
+  <audio id="audio"></audio>
 </div>
 
-<audio id="audio"></audio>
-
 <script>
-const fileInput = document.getElementById("fileInput");
-const audio = document.getElementById("audio");
-const playPause = document.getElementById("playPause");
-const prev = document.getElementById("prev");
-const next = document.getElementById("next");
-const progress = document.getElementById("progress");
-const progressBar = document.getElementById("progressBar");
-const songName = document.getElementById("songName");
-const playlist = document.getElementById("playlist");
+  const fileInput = document.getElementById('fileInput');
+  const driveInput = document.getElementById('driveInput');
+  const addDrive = document.getElementById('addDrive');
+  const playlist = document.getElementById('playlist');
+  const audio = document.getElementById('audio');
+  const playBtn = document.getElementById('play');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
 
-let files = [];
-let currentIndex = 0;
-let playing = false;
+  let songs = [];
+  let currentIndex = 0;
 
-// Load selected files
-fileInput.addEventListener("change", e => {
-  files = Array.from(e.target.files);
-  playlist.innerHTML = "";
-  files.forEach((f, i) => {
-    const li = document.createElement("li");
-    li.textContent = f.name;
-    li.onclick = () => playSong(i);
-    playlist.appendChild(li);
+  function addSong(name, src) {
+    songs.push({ name, src });
+    const songDiv = document.createElement('div');
+    songDiv.classList.add('song');
+    songDiv.textContent = name;
+    songDiv.addEventListener('click', () => {
+      currentIndex = songs.indexOf(songs.find(s => s.name === name));
+      playSong();
+    });
+    playlist.appendChild(songDiv);
+  }
+
+  fileInput.addEventListener('change', (e) => {
+    const files = e.target.files;
+    for (let file of files) {
+      const url = URL.createObjectURL(file);
+      addSong(file.name, url);
+    }
   });
-  if (files.length > 0) playSong(0);
-});
 
-function playSong(i) {
-  currentIndex = i;
-  const file = files[i];
-  if (!file) return;
-  const url = URL.createObjectURL(file);
-  audio.src = url;
-  audio.play().catch(err => console.log(err));
-  playing = true;
-  playPause.textContent = "⏸️";
-  songName.textContent = file.name;
-  highlightCurrent();
-}
+  addDrive.addEventListener('click', () => {
+    const url = driveInput.value.trim();
+    if (!url) return alert('Enter a valid Google Drive URL');
+    // Convert Google Drive link to direct download
+    const fileId = url.match(/[-\w]{25,}/);
+    if (!fileId) return alert('Invalid Google Drive URL');
+    const directURL = `https://drive.google.com/uc?export=download&id=${fileId[0]}`;
+    const name = `Drive Song ${songs.length+1}`;
+    addSong(name, directURL);
+    driveInput.value = '';
+  });
 
-function highlightCurrent() {
-  [...playlist.children].forEach((li, i) =>
-    li.classList.toggle("active", i === currentIndex)
-  );
-}
-
-playPause.onclick = () => {
-  if (!files.length) return;
-  if (playing) {
-    audio.pause();
-    playing = false;
-    playPause.textContent = "▶️";
-  } else {
-    audio.play().catch(()=>{});
-    playing = true;
-    playPause.textContent = "⏸️";
+  function playSong() {
+    if (!songs.length) return;
+    audio.src = songs[currentIndex].src;
+    audio.play();
+    playBtn.textContent = '⏸';
   }
-};
 
-next.onclick = () => {
-  if (!files.length) return;
-  currentIndex = (currentIndex + 1) % files.length;
-  playSong(currentIndex);
-};
+  playBtn.addEventListener('click', () => {
+    if (!audio.src) return;
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = '⏸';
+    } else {
+      audio.pause();
+      playBtn.textContent = '▶';
+    }
+  });
 
-prev.onclick = () => {
-  if (!files.length) return;
-  currentIndex = (currentIndex - 1 + files.length) % files.length;
-  playSong(currentIndex);
-};
+  prevBtn.addEventListener('click', () => {
+    if (songs.length === 0) return;
+    currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+    playSong();
+  });
 
-audio.ontimeupdate = () => {
-  if (audio.duration) {
-    const percent = (audio.currentTime / audio.duration) * 100;
-    progressBar.style.width = percent + "%";
-  }
-};
+  nextBtn.addEventListener('click', () => {
+    if (songs.length === 0) return;
+    currentIndex = (currentIndex + 1) % songs.length;
+    playSong();
+  });
 
-progress.onclick = e => {
-  if (!audio.duration) return;
-  const width = progress.clientWidth;
-  const clickX = e.offsetX;
-  audio.currentTime = (clickX / width) * audio.duration;
-};
-
-audio.onended = () => next.onclick();
+  audio.addEventListener('ended', () => {
+    nextBtn.click();
+  });
 </script>
-
 </body>
 </html>
