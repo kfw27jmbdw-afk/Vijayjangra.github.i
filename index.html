@@ -1,139 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎵 My Local Music Player</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .player {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 25px;
-      border-radius: 15px;
-      text-align: center;
-      width: 90%;
-      max-width: 340px;
-    }
-
-    h1 {
-      font-size: 1.5em;
-      margin-bottom: 15px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    label {
-      background: #fff;
-      color: #333;
-      padding: 10px 15px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      display: inline-block;
-      margin-bottom: 15px;
-    }
-
-    button {
-      background: #fff;
-      border: none;
-      color: #333;
-      padding: 10px 18px;
-      border-radius: 10px;
-      margin: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background: #333;
-      color: #fff;
-    }
-
-    .song-name {
-      margin-top: 10px;
-      font-size: 0.9em;
-      opacity: 0.8;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Music Player</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 50px;
+            background-color: #333;
+            color: white;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #555;
+            border-radius: 8px;
+            background-color: #444;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+        /* Optional styling for file label */
+        #fileName {
+            display: block;
+            margin-bottom: 15px;
+            font-style: italic;
+            height: 1.2em; /* Reserve space */
+        }
+    </style>
 </head>
 <body>
-  <div class="player">
-    <h1>🎧 My Local Music Player</h1>
 
-    <label for="fileInput">📂 Choose Music File</label>
-    <input type="file" id="fileInput" accept="audio/*">
+    <div class="container">
+        <h1>Universal Audio Player</h1>
 
-    <div class="controls">
-      <button id="playPause">▶️ Play</button>
-      <button id="stop">⏹ Stop</button>
+        <input type="file" id="fileInput" accept="audio/*">
+        
+        <span id="fileName">No file selected.</span>
+
+        <audio id="audioPlayer" controls></audio>
+        
+        <p id="statusMessage" style="color: yellow;"></p>
     </div>
 
-    <audio id="audioPlayer" controls style="width:100%; margin-top:10px; display:none;"></audio>
-    <p class="song-name" id="songName"></p>
-  </div>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const fileNameSpan = document.getElementById('fileName');
+        const statusMessage = document.getElementById('statusMessage');
 
-  <script>
-    const fileInput = document.getElementById("fileInput");
-    const audio = document.getElementById("audioPlayer");
-    const playPause = document.getElementById("playPause");
-    const stopBtn = document.getElementById("stop");
-    const songName = document.getElementById("songName");
+        fileInput.addEventListener('change', function(event) {
+            // Check if any file was selected
+            const file = event.target.files[0];
 
-    let isPlaying = false;
+            if (file) {
+                // 1. Get the local file data as a URL
+                const fileURL = URL.createObjectURL(file);
+                
+                // 2. Set the audio player source to the new URL
+                audioPlayer.src = fileURL;
+                
+                // 3. Update the file name display
+                fileNameSpan.textContent = `Now Playing: ${file.name}`;
+                statusMessage.textContent = ''; // Clear status
 
-    // When a file is chosen
-    fileInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        audio.src = url;
-        audio.style.display = "block";
-        songName.textContent = "Now Playing: " + file.name;
-        audio.load();
-        isPlaying = false;
-        playPause.textContent = "▶️ Play";
-      }
-    });
+                // 4. Try to load the audio
+                audioPlayer.load();
+                
+                // Optional: Automatically start playing
+                // audioPlayer.play().catch(error => {
+                //     // Browsers often block autoplay until the user interacts with the page
+                //     console.error("Autoplay failed:", error);
+                //     statusMessage.textContent = 'Ready to play. Please press the play button.';
+                // });
 
-    // Play / Pause button
-    playPause.addEventListener("click", () => {
-      if (!audio.src) {
-        alert("Please choose a music file first 🎵");
-        return;
-      }
+            } else {
+                fileNameSpan.textContent = 'No file selected.';
+                audioPlayer.src = ''; // Clear source
+            }
+        });
+        
+        // Error handling for the audio element
+        audioPlayer.addEventListener('error', function() {
+            // Check for specific error types (e.g., MEDIA_ERR_SRC_NOT_SUPPORTED)
+            const error = audioPlayer.error;
+            let message = "An unknown playback error occurred.";
 
-      if (isPlaying) {
-        audio.pause();
-        playPause.textContent = "▶️ Play";
-      } else {
-        audio.play();
-        playPause.textContent = "⏸ Pause";
-      }
+            if (error) {
+                switch(error.code) {
+                    case error.MEDIA_ERR_ABORTED:
+                        message = "Playback aborted.";
+                        break;
+                    case error.MEDIA_ERR_NETWORK:
+                        message = "A network error occurred while fetching the media.";
+                        break;
+                    case error.MEDIA_ERR_DECODE:
+                        message = "The media format is not supported by this browser/device.";
+                        break;
+                    case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                        message = "The selected file type is not supported for playback on this device.";
+                        break;
+                    default:
+                        message = `Playback Error (${error.code}). File not supported?`;
+                }
+            }
+            statusMessage.textContent = message;
+        });
 
-      isPlaying = !isPlaying;
-    });
+    </script>
 
-    // Stop button
-    stopBtn.addEventListener("click", () => {
-      if (!audio.src) return;
-      audio.pause();
-      audio.currentTime = 0;
-      playPause.textContent = "▶️ Play";
-      isPlaying = false;
-    });
-  </script>
 </body>
 </html>
