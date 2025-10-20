@@ -4,17 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Web Player</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Inter font for a modern look -->
     <style>
-        @import url('https://fonts.fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            /* Disable text selection for a cleaner app feel */
             user-select: none;
         }
-        /* Custom scrollbar for a darker aesthetic */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -25,13 +21,12 @@
         ::-webkit-scrollbar-track {
             background: #121212;
         }
-        /* Custom styling for the progress bar thumb */
         input[type=range]::-webkit-slider-thumb {
             appearance: none;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #10B981; /* Green-500 */
+            background: #10B981;
             cursor: pointer;
             box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
             transition: 0.15s ease-in-out;
@@ -44,17 +39,13 @@
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col antialiased">
 
-    <!-- Main Application Container -->
     <div class="flex-grow flex flex-col md:flex-row p-2 md:p-3 overflow-hidden">
 
-        <!-- Sidebar (Navigation & Library) -->
         <aside class="bg-gray-900 rounded-xl p-4 md:w-72 w-full md:flex-shrink-0 mb-2 md:mb-0 md:mr-3 overflow-y-auto">
             
-            <!-- Logo -->
             <nav class="space-y-2 mb-6">
                 <div class="text-3xl font-extrabold text-green-400 mb-6 tracking-wider">WebPlayer</div>
                 
-                <!-- Navigation Links -->
                 <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition duration-150 text-white font-semibold">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 12h3v8h14v-8h3L12 2zm1 14h-2v-6h2v6z"></path></svg>
                     <span>Home</span>
@@ -65,31 +56,25 @@
                 </a>
             </nav>
 
-            <!-- Library / File Input -->
             <div class="bg-gray-800 p-4 rounded-xl shadow-inner">
                 <h3 class="text-sm font-bold mb-3 text-gray-400 uppercase tracking-widest">LOAD MUSIC</h3>
                 
-                <!-- Hidden file input -->
                 <input type="file" id="fileInput" accept="audio/*" multiple class="hidden">
                 
-                <!-- Custom Upload Button -->
                 <label for="fileInput" id="uploadBtn" class="w-full text-center py-2.5 px-4 bg-green-500 text-black font-extrabold rounded-full hover:bg-green-400 transition duration-150 cursor-pointer text-sm shadow-xl shadow-green-900/50 transform hover:scale-[1.02]">
                     + Select Music Files
                 </label>
                 
-                <!-- Clarified Instructions for Drive Access -->
                 <hr class="border-gray-700 my-3">
                 <p class="text-sm text-gray-400 text-center font-bold">
-                    To access **Google Drive** files:
+                    File Persistence Guide:
                 </p>
                 <p class="text-xs text-gray-500 mt-1 text-center">
-                    Use the file dialog to navigate to your **synced Google Drive folder** on your computer.
-                    The browser can only access files that are already downloaded locally.
+                    **Your playlist structure is saved!** Please click the button above and **re-select the same files** to restore playback after reloading.
                 </p>
             </div>
         </aside>
 
-        <!-- Main Content Area (Playlist) -->
         <main class="flex-grow bg-gray-900 rounded-xl p-5 md:p-6 overflow-y-auto">
             <h2 class="text-4xl font-extrabold mb-8">Local Playlist</h2>
             
@@ -97,7 +82,6 @@
                 Loading files... Please wait.
             </div>
 
-            <!-- Playlist Table/List -->
             <div class="space-y-1" id="playlistContainer">
                 <div id="emptyPlaylist" class="text-gray-400 text-center py-10 border-2 border-dashed border-gray-700 rounded-xl">
                     Click **+ Select Music Files** on the left to load tracks.
@@ -107,13 +91,10 @@
         </main>
     </div>
 
-    <!-- Persistent Player Footer -->
     <footer class="bg-gray-800 border-t border-gray-700 p-4 flex flex-col items-center justify-between shadow-2xl sticky bottom-0">
         
-        <!-- Player Content Row -->
         <div class="flex w-full items-center justify-between">
             
-            <!-- Currently Playing Song Info (Left) -->
             <div class="flex items-center w-1/4 min-w-[150px]">
                 <div class="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0 mr-3 shadow-lg">
                     <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-2-12a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"></path></svg>
@@ -124,10 +105,8 @@
                 </div>
             </div>
             
-            <!-- Player Controls & Progress (Center) -->
             <div class="flex flex-col items-center w-1/2 max-w-xl">
                 
-                <!-- Controls -->
                 <div class="flex space-x-6 items-center mb-2">
                     <button id="prevBtn" class="text-gray-400 hover:text-white transition duration-150 disabled:opacity-30" title="Previous">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6l-8.5 6z"></path></svg>
@@ -143,7 +122,6 @@
                     </button>
                 </div>
                 
-                <!-- Progress Bar -->
                 <div class="flex items-center w-full space-x-2 text-xs text-gray-400">
                     <span id="currentTime">0:00</span>
                     <div id="progressBarContainer" class="flex-grow h-1 bg-gray-600 rounded-full cursor-pointer overflow-hidden group">
@@ -154,7 +132,6 @@
                 
             </div>
             
-            <!-- Volume Control (Right) -->
             <div class="w-1/4 flex items-center justify-end space-x-2">
                 <button id="volumeBtn" class="text-gray-400 hover:text-white transition duration-150" title="Volume">
                     <svg class="w-5 h-5" id="volumeHigh" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 5.3v2.4c1.88.75 3 2.52 3 4.3s-1.12 3.55-3 4.3v2.4c3.15-.93 5.5-3.83 5.5-7.1 0-3.27-2.35-6.17-5.5-7.1z"></path></svg>
@@ -167,10 +144,8 @@
 
     </footer>
 
-    <!-- Audio Element (Hidden) -->
     <audio id="audioElement"></audio>
     
-    <!-- Custom Modal for Alerts -->
     <div id="customModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden p-4">
         <div class="bg-gray-700 p-6 rounded-xl shadow-2xl max-w-sm w-full border-2 border-green-500">
             <h3 class="text-2xl font-bold mb-3 text-white" id="modalTitle">Playback Error</h3>
@@ -206,7 +181,7 @@
             document.getElementById('modalMessage').textContent = message;
             document.getElementById('customModal').classList.remove('hidden');
         }
-
+        
         // --- DOM Elements ---
         const audio = document.getElementById('audioElement');
         const fileInput = document.getElementById('fileInput');
@@ -232,13 +207,94 @@
         let files = [];
         let currentIndex = -1;
         let isPlaying = false;
+        let savedPlaylistNames = []; // Stores only the names for persistence
         
         // Disable controls initially
         playPauseBtn.disabled = true;
         nextBtn.disabled = true;
         prevBtn.disabled = true;
 
+        // --- Persistence Functions ---
+
+        function savePlaylistState() {
+            if (files.length > 0) {
+                const state = {
+                    names: files.map(f => f.name),
+                    currentIndex: currentIndex,
+                    songName: files[currentIndex] ? files[currentIndex].name.replace(/\.(mp3|wav|m4a|ogg)$/i, '') : 'No song selected'
+                };
+                localStorage.setItem('webplayer_playlist', JSON.stringify(state));
+            } else {
+                localStorage.removeItem('webplayer_playlist');
+            }
+        }
+
+        function loadPlaylistStructure() {
+            const savedState = localStorage.getItem('webplayer_playlist');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                savedPlaylistNames = state.names;
+                currentIndex = state.currentIndex;
+                
+                // 1. Update UI to show the saved playlist structure
+                playlistContainer.innerHTML = '';
+                savedPlaylistNames.forEach((name, index) => {
+                    const listItem = createPlaylistItem(index, name, true);
+                    playlistContainer.appendChild(listItem);
+                });
+
+                // 2. Update the currently playing song display (even though the file is not loaded yet)
+                currentSongNameEl.textContent = state.songName;
+                highlightCurrentTrack(currentIndex);
+                
+                // 3. Update the instructions to prompt re-selection
+                emptyPlaylistEl.innerHTML = `
+                    <p class="text-lg font-bold mb-2 text-green-400">Playlist Loaded!</p>
+                    <p>Click the **+ Select Music Files** button and **re-select all ${savedPlaylistNames.length} songs** to enable playback.</p>
+                `;
+                emptyPlaylistEl.classList.remove('hidden');
+
+            } else {
+                emptyPlaylistEl.innerHTML = 'Click **+ Select Music Files** on the left to load tracks.';
+                emptyPlaylistEl.classList.remove('hidden');
+            }
+        }
+        
         // --- Core Player Functions ---
+
+        /**
+         * Creates a playlist item DOM element.
+         * @param {number} index - Index in the files array/names list.
+         * @param {string} fileName - The name of the file.
+         * @param {boolean} isPlaceholder - True if file object is not available yet.
+         */
+        function createPlaylistItem(index, fileName, isPlaceholder = false) {
+            const listItem = document.createElement('div');
+            listItem.className = 'playlist-item p-3 rounded-lg cursor-pointer flex justify-between items-center transition duration-150 border-b border-gray-700 last:border-b-0';
+            
+            // Set hover and default styles
+            listItem.classList.add(isPlaceholder ? 'bg-gray-800/50' : 'hover:bg-gray-800');
+
+            const cleanName = fileName.replace(/\.(mp3|wav|m4a|ogg)$/i, '');
+            listItem.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="text-gray-400 w-4 text-right">${index + 1}.</span>
+                    <span class="text-sm font-medium truncate">${cleanName}</span>
+                </div>
+            `;
+            listItem.setAttribute('data-index', index);
+            
+            if (!isPlaceholder) {
+                // Only add click handler if the actual file is present
+                listItem.addEventListener('click', () => loadSong(index, true));
+            } else {
+                // Placeholder click handler to prompt user
+                listItem.addEventListener('click', () => showModal('Files Not Loaded', 'Please use the **+ Select Music Files** button to re-load your audio files first.'));
+            }
+
+            return listItem;
+        }
+
 
         /**
          * Loads and prepares a song for playback.
@@ -258,6 +314,7 @@
             // 2. Update UI
             currentSongNameEl.textContent = file.name.replace(/\.(mp3|wav|m4a|ogg)$/i, ''); // Clean up file extension
             highlightCurrentTrack(index);
+            savePlaylistState(); // Save current track index
 
             // 3. Set duration placeholder and progress
             currentTimeEl.textContent = '0:00';
@@ -278,7 +335,6 @@
                     isPlaying = true;
                     updatePlayPauseIcon();
                 }).catch(e => {
-                    // Autoplay prevented error, likely on initial load or mobile tap
                     console.log("Autoplay prevented:", e.name);
                     showModal('Autoplay Blocked', 'The song loaded, but the browser prevented immediate playback. Please tap the main Play button.');
                     isPlaying = false;
@@ -287,9 +343,8 @@
             }
         }
 
-        /**
-         * Plays or pauses the current song.
-         */
+        // Other core functions (togglePlayPause, nextTrack, prevTrack, updatePlayPauseIcon, highlightCurrentTrack) remain the same...
+
         function togglePlayPause() {
             if (audio.src === '' || files.length === 0) {
                 showModal('No Track Loaded', 'Please select music files first using the **+ Select Music Files** button.');
@@ -309,38 +364,26 @@
                 });
             }
             updatePlayPauseIcon();
+            savePlaylistState();
         }
 
-        /**
-         * Moves to the next track in the playlist.
-         */
         function nextTrack() {
             if (files.length === 0) return;
             currentIndex = (currentIndex + 1) % files.length;
-            loadSong(currentIndex, true); // Auto-play the next track
+            loadSong(currentIndex, true);
         }
 
-        /**
-         * Moves to the previous track in the playlist.
-         */
         function prevTrack() {
             if (files.length === 0) return;
             currentIndex = (currentIndex - 1 + files.length) % files.length;
-            loadSong(currentIndex, true); // Auto-play the previous track
+            loadSong(currentIndex, true);
         }
 
-        /**
-         * Updates the play/pause icon state.
-         */
         function updatePlayPauseIcon() {
             playIcon.classList.toggle('hidden', isPlaying);
             pauseIcon.classList.toggle('hidden', !isPlaying);
         }
 
-        /**
-         * Highlights the currently playing track in the playlist.
-         * @param {number} index 
-         */
         function highlightCurrentTrack(index) {
             document.querySelectorAll('.playlist-item').forEach((el, i) => {
                 el.classList.toggle('bg-green-600/20', i === index);
@@ -350,37 +393,41 @@
         
         // --- Event Listeners ---
 
-        // 1. File Input Change
+        // 1. File Input Change (The key update for persistence)
         fileInput.addEventListener('change', (e) => {
-            files = Array.from(e.target.files);
+            const newFiles = Array.from(e.target.files);
             
-            playlistContainer.innerHTML = '';
-            emptyPlaylistEl.classList.add('hidden');
-            loadingMessageEl.classList.add('hidden'); // Ensure loading message is cleared
+            if (newFiles.length === 0) return;
 
-            if (files.length > 0) {
+            // Simple file name match (assuming the user selects them in the correct order)
+            if (savedPlaylistNames.length > 0 && newFiles.length === savedPlaylistNames.length) {
+                // If the user re-selected the correct number of files, we restore the original order
+                files = newFiles; 
+                // Restore the original playlist structure based on the new file objects
+                playlistContainer.innerHTML = '';
                 files.forEach((file, index) => {
-                    // Create modern playlist item
-                    const listItem = document.createElement('div');
-                    listItem.className = 'playlist-item p-3 rounded-lg cursor-pointer flex justify-between items-center hover:bg-gray-800 transition duration-150 border-b border-gray-700 last:border-b-0';
-                    listItem.innerHTML = `
-                        <div class="flex items-center space-x-3">
-                            <span class="text-gray-400 w-4 text-right">${index + 1}.</span>
-                            <span class="text-sm font-medium truncate">${file.name.replace(/\.(mp3|wav|m4a|ogg)$/i, '')}</span>
-                        </div>
-                    `;
-                    listItem.setAttribute('data-index', index);
-                    
-                    // Add click handler to play, ensuring we try to play on explicit track tap
-                    listItem.addEventListener('click', () => loadSong(index, true));
-                    
+                    const listItem = createPlaylistItem(index, file.name, false);
                     playlistContainer.appendChild(listItem);
                 });
                 
-                loadSong(0); // Load the first song (do not auto-play, wait for the user)
+                // Load the song that was playing when the page was last closed
+                loadSong(currentIndex);
+
             } else {
-                emptyPlaylistEl.classList.remove('hidden');
+                // Standard initial load or mismatched re-selection
+                files = newFiles;
+                currentIndex = 0;
+                playlistContainer.innerHTML = '';
+                files.forEach((file, index) => {
+                    const listItem = createPlaylistItem(index, file.name, false);
+                    playlistContainer.appendChild(listItem);
+                });
+                loadSong(0);
             }
+            
+            emptyPlaylistEl.classList.add('hidden');
+            loadingMessageEl.classList.add('hidden');
+            savePlaylistState(); // Save the new, valid file names
         });
         
         // 2. Player Controls
@@ -413,7 +460,6 @@
         // 5. Volume Slider
         volumeSlider.addEventListener('input', (e) => {
             audio.volume = e.target.value;
-            // Update volume icon based on volume level
             if (audio.volume === 0) {
                 volumeHighIcon.classList.add('hidden');
                 volumeMutedIcon.classList.remove('hidden');
@@ -427,9 +473,11 @@
         modalCloseBtn.addEventListener('click', () => {
             document.getElementById('customModal').classList.add('hidden');
         });
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadPlaylistStructure);
         
     </script>
 
 </body>
 </html>
-
