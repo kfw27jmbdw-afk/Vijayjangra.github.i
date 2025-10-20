@@ -1,199 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spotify-like Music Player</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #121212;
-    color: white;
-  }
-
-  .player {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100%;
-  }
-
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 30px;
-    background-color: #1c1c1c;
-    align-items: center;
-  }
-
-  .top-bar h1 {
-    margin: 0;
-    font-size: 20px;
-  }
-
-  .playlist {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-  }
-
-  .song {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #1e1e1e;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .song:hover {
-    background-color: #333;
-  }
-
-  .controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-color: #1c1c1c;
-  }
-
-  .controls button {
-    background: none;
-    border: none;
-    color: white;
-    margin: 0 20px;
-    font-size: 24px;
-    cursor: pointer;
-  }
-
-  .controls button:hover {
-    color: #1db954;
-  }
-
-  input[type="file"] {
-    display: none;
-  }
-
-  label {
-    background-color: #1db954;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  audio {
-    width: 100%;
-    outline: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Web Player</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font for a modern look -->
+    <style>
+        @import url('https://fonts.fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Disable text selection for a cleaner app feel */
+            user-select: none;
+        }
+        /* Custom scrollbar for a darker aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+        /* Custom styling for the progress bar thumb */
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10B981; /* Green-500 */
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+            transition: 0.15s ease-in-out;
+        }
+        input[type=range]:hover::-webkit-slider-thumb {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
 </head>
-<body>
-<div class="player">
-  <div class="top-bar">
-    <h1>Spotify Player</h1>
-    <div>
-      <label for="fileInput">Upload Local Music</label>
-      <input type="file" id="fileInput" multiple accept="audio/*">
-      <label for="driveInput">Google Drive URL</label>
-      <input type="text" id="driveInput" placeholder="Paste Google Drive File URL">
-      <button id="addDrive">Add</button>
+<body class="bg-black text-white min-h-screen flex flex-col antialiased">
+
+    <!-- Main Application Container -->
+    <div class="flex-grow flex flex-col md:flex-row p-2 md:p-3 overflow-hidden">
+
+        <!-- Sidebar (Navigation & Library) -->
+        <aside class="bg-gray-900 rounded-xl p-4 md:w-72 w-full md:flex-shrink-0 mb-2 md:mb-0 md:mr-3 overflow-y-auto">
+            
+            <!-- Logo -->
+            <nav class="space-y-2 mb-6">
+                <div class="text-3xl font-extrabold text-green-400 mb-6 tracking-wider">WebPlayer</div>
+                
+                <!-- Navigation Links -->
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition duration-150 text-white font-semibold">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 12h3v8h14v-8h3L12 2zm1 14h-2v-6h2v6z"></path></svg>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800 transition duration-150 text-gray-400">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-8 8a10 10 0 1120 0 10 10 0 01-20 0zm19.707 9.293l-4-4a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414-1.414z"></path></svg>
+                    <span>Search</span>
+                </a>
+            </nav>
+
+            <!-- Library / File Input -->
+            <div class="bg-gray-800 p-4 rounded-xl shadow-inner">
+                <h3 class="text-sm font-bold mb-3 text-gray-400 uppercase tracking-widest">LOAD MUSIC</h3>
+                
+                <!-- Hidden file input -->
+                <input type="file" id="fileInput" accept="audio/*" multiple class="hidden">
+                
+                <!-- Custom Upload Button -->
+                <label for="fileInput" id="uploadBtn" class="w-full text-center py-2.5 px-4 bg-green-500 text-black font-extrabold rounded-full hover:bg-green-400 transition duration-150 cursor-pointer text-sm shadow-xl shadow-green-900/50 transform hover:scale-[1.02]">
+                    + Select Music Files
+                </label>
+                
+                <!-- Clarified Instructions for Drive Access -->
+                <hr class="border-gray-700 my-3">
+                <p class="text-sm text-gray-400 text-center font-bold">
+                    To access **Google Drive** files:
+                </p>
+                <p class="text-xs text-gray-500 mt-1 text-center">
+                    Use the file dialog to navigate to your **synced Google Drive folder** on your computer.
+                    The browser can only access files that are already downloaded locally.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area (Playlist) -->
+        <main class="flex-grow bg-gray-900 rounded-xl p-5 md:p-6 overflow-y-auto">
+            <h2 class="text-4xl font-extrabold mb-8">Local Playlist</h2>
+            
+            <div id="loadingMessage" class="text-gray-400 text-center py-10 hidden">
+                Loading files... Please wait.
+            </div>
+
+            <!-- Playlist Table/List -->
+            <div class="space-y-1" id="playlistContainer">
+                <div id="emptyPlaylist" class="text-gray-400 text-center py-10 border-2 border-dashed border-gray-700 rounded-xl">
+                    Click **+ Select Music Files** on the left to load tracks.
+                </div>
+            </div>
+            
+        </main>
     </div>
-  </div>
 
-  <div class="playlist" id="playlist"></div>
+    <!-- Persistent Player Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 p-4 flex flex-col items-center justify-between shadow-2xl sticky bottom-0">
+        
+        <!-- Player Content Row -->
+        <div class="flex w-full items-center justify-between">
+            
+            <!-- Currently Playing Song Info (Left) -->
+            <div class="flex items-center w-1/4 min-w-[150px]">
+                <div class="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0 mr-3 shadow-lg">
+                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-2-12a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"></path></svg>
+                </div>
+                <div class="truncate">
+                    <div class="text-sm font-bold text-white truncate max-w-24 md:max-w-40" id="currentSongName">No song selected</div>
+                    <div class="text-xs text-gray-400">Local files</div>
+                </div>
+            </div>
+            
+            <!-- Player Controls & Progress (Center) -->
+            <div class="flex flex-col items-center w-1/2 max-w-xl">
+                
+                <!-- Controls -->
+                <div class="flex space-x-6 items-center mb-2">
+                    <button id="prevBtn" class="text-gray-400 hover:text-white transition duration-150 disabled:opacity-30" title="Previous">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6l-8.5 6z"></path></svg>
+                    </button>
+                    
+                    <button id="playPauseBtn" class="p-3 bg-white text-black rounded-full hover:scale-110 transition transform duration-150 shadow-lg shadow-gray-900/50 disabled:opacity-30" title="Play/Pause">
+                        <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"></path></svg>
+                        <svg id="pauseIcon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></svg>
+                    </button>
+                    
+                    <button id="nextBtn" class="text-gray-400 hover:text-white transition duration-150 disabled:opacity-30" title="Next">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 6h-2v12h2v-12zm-9 6l8.5 6V6l-8.5 6z"></path></svg>
+                    </button>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="flex items-center w-full space-x-2 text-xs text-gray-400">
+                    <span id="currentTime">0:00</span>
+                    <div id="progressBarContainer" class="flex-grow h-1 bg-gray-600 rounded-full cursor-pointer overflow-hidden group">
+                        <div id="progressBar" class="h-full bg-green-500 rounded-full transition-all duration-100 ease-linear group-hover:bg-green-400" style="width: 0%;"></div>
+                    </div>
+                    <span id="duration">0:00</span>
+                </div>
+                
+            </div>
+            
+            <!-- Volume Control (Right) -->
+            <div class="w-1/4 flex items-center justify-end space-x-2">
+                <button id="volumeBtn" class="text-gray-400 hover:text-white transition duration-150" title="Volume">
+                    <svg class="w-5 h-5" id="volumeHigh" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 5.3v2.4c1.88.75 3 2.52 3 4.3s-1.12 3.55-3 4.3v2.4c3.15-.93 5.5-3.83 5.5-7.1 0-3.27-2.35-6.17-5.5-7.1z"></path></svg>
+                    <svg class="w-5 h-5 hidden" id="volumeMuted" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.08-.34.13-.7.13-1.13zm-5.61-4.77l-1.81-1.81-2.43 2.43H2v6h4.18l.75.75 3.02 3.02.7-.71 1.7-1.7c.36.08.72.17 1.08.27v-4.66l2.06 2.06c.17-.66.27-1.34.27-2.04 0-.15-.01-.3-.03-.45l-4.14-4.14zM19 12c0 .94-.25 1.82-.68 2.57l1.71 1.71C20.47 15.71 21 13.91 21 12c0-3.8-2.55-7.01-6-8.28v2.06c2.33 1.05 4 3.35 4 6.22zM8.5 7.15l-5.32 5.32H2v-6h1.18l5.32 5.32-2.16 2.16 1.41 1.41 2.16-2.16 4.14 4.14-1.41 1.41-5.6-5.6-2.05 2.05-1.41-1.41 2.12-2.12-2.73-2.73 1.41-1.41 2.73 2.73 1.81-1.81z"></path></svg>
+                </button>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" class="w-20 md:w-28 h-1 bg-gray-600 rounded-full cursor-pointer">
+            </div>
 
-  <div class="controls">
-    <button id="prev">&#9664;&#9664;</button>
-    <button id="play">&#9654;</button>
-    <button id="next">&#9654;&#9654;</button>
-  </div>
+        </div>
 
-  <audio id="audio"></audio>
-</div>
+    </footer>
 
-<script>
-  const fileInput = document.getElementById('fileInput');
-  const driveInput = document.getElementById('driveInput');
-  const addDrive = document.getElementById('addDrive');
-  const playlist = document.getElementById('playlist');
-  const audio = document.getElementById('audio');
-  const playBtn = document.getElementById('play');
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
+    <!-- Audio Element (Hidden) -->
+    <audio id="audioElement"></audio>
+    
+    <!-- Custom Modal for Alerts -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-gray-700 p-6 rounded-xl shadow-2xl max-w-sm w-full border-2 border-green-500">
+            <h3 class="text-2xl font-bold mb-3 text-white" id="modalTitle">Playback Error</h3>
+            <p class="text-gray-300 mb-4 text-sm" id="modalMessage">Could not start playback. On mobile devices (like iPhone), you must explicitly click the main Play button after loading files due to security restrictions.</p>
+            <button id="modalCloseBtn" class="w-full py-2 bg-green-500 text-black font-semibold rounded-lg hover:bg-green-400 transition transform hover:scale-[1.01]">GOT IT</button>
+        </div>
+    </div>
 
-  let songs = [];
-  let currentIndex = 0;
 
-  function addSong(name, src) {
-    songs.push({ name, src });
-    const songDiv = document.createElement('div');
-    songDiv.classList.add('song');
-    songDiv.textContent = name;
-    songDiv.addEventListener('click', () => {
-      currentIndex = songs.indexOf(songs.find(s => s.name === name));
-      playSong();
-    });
-    playlist.appendChild(songDiv);
-  }
+    <script>
+        // --- Utility Functions ---
 
-  fileInput.addEventListener('change', (e) => {
-    const files = e.target.files;
-    for (let file of files) {
-      const url = URL.createObjectURL(file);
-      addSong(file.name, url);
-    }
-  });
+        /**
+         * Formats seconds into a M:SS string.
+         * @param {number} seconds 
+         * @returns {string}
+         */
+        function formatTime(seconds) {
+            if (isNaN(seconds) || seconds < 0) return '0:00';
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            const paddedSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+            return `${minutes}:${paddedSeconds}`;
+        }
 
-  addDrive.addEventListener('click', () => {
-    const url = driveInput.value.trim();
-    if (!url) return alert('Enter a valid Google Drive URL');
-    // Convert Google Drive link to direct download
-    const fileId = url.match(/[-\w]{25,}/);
-    if (!fileId) return alert('Invalid Google Drive URL');
-    const directURL = `https://drive.google.com/uc?export=download&id=${fileId[0]}`;
-    const name = `Drive Song ${songs.length+1}`;
-    addSong(name, directURL);
-    driveInput.value = '';
-  });
+        /**
+         * Shows the custom modal.
+         * @param {string} title 
+         * @param {string} message 
+         */
+        function showModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('customModal').classList.remove('hidden');
+        }
 
-  function playSong() {
-    if (!songs.length) return;
-    audio.src = songs[currentIndex].src;
-    audio.play();
-    playBtn.textContent = '⏸';
-  }
+        // --- DOM Elements ---
+        const audio = document.getElementById('audioElement');
+        const fileInput = document.getElementById('fileInput');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const currentSongNameEl = document.getElementById('currentSongName');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const playlistContainer = document.getElementById('playlistContainer');
+        const emptyPlaylistEl = document.getElementById('emptyPlaylist');
+        const loadingMessageEl = document.getElementById('loadingMessage');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeHighIcon = document.getElementById('volumeHigh');
+        const volumeMutedIcon = document.getElementById('volumeMuted');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        
+        // --- State ---
+        let files = [];
+        let currentIndex = -1;
+        let isPlaying = false;
+        
+        // Disable controls initially
+        playPauseBtn.disabled = true;
+        nextBtn.disabled = true;
+        prevBtn.disabled = true;
 
-  playBtn.addEventListener('click', () => {
-    if (!audio.src) return;
-    if (audio.paused) {
-      audio.play();
-      playBtn.textContent = '⏸';
-    } else {
-      audio.pause();
-      playBtn.textContent = '▶';
-    }
-  });
+        // --- Core Player Functions ---
 
-  prevBtn.addEventListener('click', () => {
-    if (songs.length === 0) return;
-    currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-    playSong();
-  });
+        /**
+         * Loads and prepares a song for playback.
+         * @param {number} index - Index in the files array.
+         * @param {boolean} shouldPlay - If true, attempt to play immediately.
+         */
+        function loadSong(index, shouldPlay = false) {
+            if (index < 0 || index >= files.length) return;
+            
+            currentIndex = index;
+            const file = files[index];
+            
+            // 1. Create secure local URL
+            const url = URL.createObjectURL(file);
+            audio.src = url;
 
-  nextBtn.addEventListener('click', () => {
-    if (songs.length === 0) return;
-    currentIndex = (currentIndex + 1) % songs.length;
-    playSong();
-  });
+            // 2. Update UI
+            currentSongNameEl.textContent = file.name.replace(/\.(mp3|wav|m4a|ogg)$/i, ''); // Clean up file extension
+            highlightCurrentTrack(index);
 
-  audio.addEventListener('ended', () => {
-    nextBtn.click();
-  });
-</script>
+            // 3. Set duration placeholder and progress
+            currentTimeEl.textContent = '0:00';
+            durationEl.textContent = '0:00';
+            progressBar.style.width = '0%';
+            
+            // 4. Update playback state and enable controls
+            playPauseBtn.disabled = false;
+            nextBtn.disabled = false;
+            prevBtn.disabled = false;
+            
+            isPlaying = false;
+            updatePlayPauseIcon();
+
+            // 5. Attempt to play if requested (e.g., clicking on a track in the playlist)
+            if (shouldPlay) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updatePlayPauseIcon();
+                }).catch(e => {
+                    // Autoplay prevented error, likely on initial load or mobile tap
+                    console.log("Autoplay prevented:", e.name);
+                    showModal('Autoplay Blocked', 'The song loaded, but the browser prevented immediate playback. Please tap the main Play button.');
+                    isPlaying = false;
+                    updatePlayPauseIcon();
+                });
+            }
+        }
+
+        /**
+         * Plays or pauses the current song.
+         */
+        function togglePlayPause() {
+            if (audio.src === '' || files.length === 0) {
+                showModal('No Track Loaded', 'Please select music files first using the **+ Select Music Files** button.');
+                return;
+            }
+
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    isPlaying = true;
+                }).catch(e => {
+                    showModal('Playback Error', 'There was an issue playing the song, or the browser has blocked it. Try refreshing and playing immediately.');
+                    console.error("Playback error:", e);
+                    isPlaying = false;
+                });
+            }
+            updatePlayPauseIcon();
+        }
+
+        /**
+         * Moves to the next track in the playlist.
+         */
+        function nextTrack() {
+            if (files.length === 0) return;
+            currentIndex = (currentIndex + 1) % files.length;
+            loadSong(currentIndex, true); // Auto-play the next track
+        }
+
+        /**
+         * Moves to the previous track in the playlist.
+         */
+        function prevTrack() {
+            if (files.length === 0) return;
+            currentIndex = (currentIndex - 1 + files.length) % files.length;
+            loadSong(currentIndex, true); // Auto-play the previous track
+        }
+
+        /**
+         * Updates the play/pause icon state.
+         */
+        function updatePlayPauseIcon() {
+            playIcon.classList.toggle('hidden', isPlaying);
+            pauseIcon.classList.toggle('hidden', !isPlaying);
+        }
+
+        /**
+         * Highlights the currently playing track in the playlist.
+         * @param {number} index 
+         */
+        function highlightCurrentTrack(index) {
+            document.querySelectorAll('.playlist-item').forEach((el, i) => {
+                el.classList.toggle('bg-green-600/20', i === index);
+                el.classList.toggle('text-green-400', i === index);
+            });
+        }
+        
+        // --- Event Listeners ---
+
+        // 1. File Input Change
+        fileInput.addEventListener('change', (e) => {
+            files = Array.from(e.target.files);
+            
+            playlistContainer.innerHTML = '';
+            emptyPlaylistEl.classList.add('hidden');
+            loadingMessageEl.classList.add('hidden'); // Ensure loading message is cleared
+
+            if (files.length > 0) {
+                files.forEach((file, index) => {
+                    // Create modern playlist item
+                    const listItem = document.createElement('div');
+                    listItem.className = 'playlist-item p-3 rounded-lg cursor-pointer flex justify-between items-center hover:bg-gray-800 transition duration-150 border-b border-gray-700 last:border-b-0';
+                    listItem.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="text-gray-400 w-4 text-right">${index + 1}.</span>
+                            <span class="text-sm font-medium truncate">${file.name.replace(/\.(mp3|wav|m4a|ogg)$/i, '')}</span>
+                        </div>
+                    `;
+                    listItem.setAttribute('data-index', index);
+                    
+                    // Add click handler to play, ensuring we try to play on explicit track tap
+                    listItem.addEventListener('click', () => loadSong(index, true));
+                    
+                    playlistContainer.appendChild(listItem);
+                });
+                
+                loadSong(0); // Load the first song (do not auto-play, wait for the user)
+            } else {
+                emptyPlaylistEl.classList.remove('hidden');
+            }
+        });
+        
+        // 2. Player Controls
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        nextBtn.addEventListener('click', nextTrack);
+        prevBtn.addEventListener('click', prevTrack);
+        
+        // 3. Audio Events
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        audio.addEventListener('ended', nextTrack);
+        
+        // 4. Progress Bar Click (Seek)
+        progressBarContainer.addEventListener('click', (e) => {
+            if (!audio.duration) return;
+            const clickX = e.offsetX;
+            const width = progressBarContainer.clientWidth;
+            const seekTime = (clickX / width) * audio.duration;
+            audio.currentTime = seekTime;
+        });
+
+        // 5. Volume Slider
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+            // Update volume icon based on volume level
+            if (audio.volume === 0) {
+                volumeHighIcon.classList.add('hidden');
+                volumeMutedIcon.classList.remove('hidden');
+            } else {
+                volumeHighIcon.classList.remove('hidden');
+                volumeMutedIcon.classList.add('hidden');
+            }
+        });
+        
+        // 6. Modal Close
+        modalCloseBtn.addEventListener('click', () => {
+            document.getElementById('customModal').classList.add('hidden');
+        });
+        
+    </script>
+
 </body>
 </html>
+
